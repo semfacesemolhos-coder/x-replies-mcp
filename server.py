@@ -4,6 +4,7 @@ from typing import Any
 
 import httpx
 from mcp.server import MCPServer
+from mcp.server.transport_security import TransportSecuritySettings
 
 X_API_BASE = "https://api.x.com/2"
 BEARER_TOKEN = os.getenv("X_BEARER_TOKEN", "").strip()
@@ -144,5 +145,19 @@ async def get_replies(
         "replies": deduped,
     }
 
+security = TransportSecuritySettings(
+    allowed_hosts=[
+        "x-replies-mcp.onrender.com",
+        "x-replies-mcp.onrender.com:*",
+    ],
+    allowed_origins=[
+        "https://x-replies-mcp.onrender.com",
+        "https://x-replies-mcp.onrender.com:*",
+    ],
+)
 
-app = mcp.streamable_http_app(stateless_http=True, json_response=True)
+app = mcp.streamable_http_app(
+    stateless_http=True,
+    json_response=True,
+    transport_security=security,
+)
